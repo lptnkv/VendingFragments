@@ -5,8 +5,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,8 @@ public class MainActivity extends FragmentActivity {
     public boolean oneFragmentShown = false;
 
     FragmentManager fm;
+    FrameLayout mainFragment;
+    ViewGroup tempParent;
 
 
     @Override
@@ -35,6 +40,7 @@ public class MainActivity extends FragmentActivity {
         instance = this;
 
         fm = getSupportFragmentManager();
+        mainFragment = findViewById(R.id.mainFragment);
         for (int i = 1; i < 5; i++) {
             automatList.add(
                     new Automat(i)
@@ -54,19 +60,6 @@ public class MainActivity extends FragmentActivity {
         for (int i = 0; i < 4; i++){
             fragmentList.add(new AutomatFragment(automatList.get(i)));
         }
-        /*
-        Button button = (Button) findViewById(R.id.hideButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (oneFragmentShown){
-                    showAllAutomats();
-                } else {
-                    showOneAutomat(0);
-                }
-            }
-        });
-         */
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.fragment1, fragmentList.get(0));
@@ -108,7 +101,6 @@ public class MainActivity extends FragmentActivity {
 
     public String CalculateQueue(int automatName) {
         int queue = 0;
-
         for (Student student : studentList){
             if (student.getAutomatName() == automatName && student.isBuying())
                 queue++;
@@ -124,6 +116,15 @@ public class MainActivity extends FragmentActivity {
             }
         }
         ft.commit();
+        View v = fragmentList.get(id).getView();
+        ViewGroup parent = (ViewGroup) v.getParent();
+        parent.removeView(v);
+        ViewGroup.LayoutParams lp = mainFragment.getLayoutParams();
+        lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        mainFragment.requestLayout();
+        mainFragment.addView(v);
+        tempParent = parent;
         oneFragmentShown = true;
     }
 
@@ -132,6 +133,13 @@ public class MainActivity extends FragmentActivity {
         for (int i = 0; i < fragmentList.size(); i++){
             if (fragmentList.get(i).isHidden()){
                 ft.show(fragmentList.get(i));
+            } else {
+                ViewGroup.LayoutParams lp = mainFragment.getLayoutParams();
+                lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                mainFragment.requestLayout();
+                mainFragment.removeView(fragmentList.get(i).getView());
+                tempParent.addView(fragmentList.get(i).getView());
             }
         }
         ft.commit();

@@ -1,6 +1,7 @@
 package ru.realityfamily.automattask.Models;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,8 +92,8 @@ public class Student {
 
         @Override
         public void run() {
+            buying = true;
             synchronized (automat){
-                buying = true;
                 updateActivity();
                 automat.setStatus(Automat.AutomatStatus.Client_Choosing);
                 updateActivity();
@@ -111,8 +112,8 @@ public class Student {
                 } catch (InterruptedException e){
                     e.printStackTrace();
                 }
-                buying = false;
             }
+            buying = false;
         }
 
         public void updateActivity(){

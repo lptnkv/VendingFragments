@@ -32,7 +32,6 @@ public class AutomatFragment extends Fragment{
         ((TextView) v.findViewById(R.id.autoName)).setText("Автомат " + this.automat.getName());
         v.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d("AutomatFragment", "fragment clicked!");
                 MainActivity instance = MainActivity.getInstance();
                 if (instance.oneFragmentShown){
                     instance.showAllAutomats();
