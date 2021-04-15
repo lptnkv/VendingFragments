@@ -1,20 +1,24 @@
 package ru.realityfamily.automattask.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import ru.realityfamily.automattask.MainActivity;
 import ru.realityfamily.automattask.Models.Automat;
 import ru.realityfamily.automattask.Models.Student;
 import ru.realityfamily.automattask.R;
 
-public class AutomatFragment extends Fragment {
+public class AutomatFragment extends Fragment{
     Automat automat;
 
     public AutomatFragment(Automat automat){
@@ -26,6 +30,17 @@ public class AutomatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View v = inflater.inflate(R.layout.automat_fragment, container, false);
         ((TextView) v.findViewById(R.id.autoName)).setText("Автомат " + this.automat.getName());
+        v.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Log.d("AutomatFragment", "fragment clicked!");
+                MainActivity instance = MainActivity.getInstance();
+                if (instance.oneFragmentShown){
+                    instance.showAllAutomats();
+                } else {
+                    instance.showOneAutomat(automat.getName() - 1);
+                }
+            }
+        });
         return v;
     }
 

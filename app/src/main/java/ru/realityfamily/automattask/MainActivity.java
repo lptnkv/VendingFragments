@@ -1,15 +1,12 @@
 package ru.realityfamily.automattask;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +21,9 @@ public class MainActivity extends FragmentActivity {
 
     List<Automat> automatList = new ArrayList<>();
     List<Student> studentList = new ArrayList<>();
-    AutomatFragment fragment1;
-    AutomatFragment fragment2;
-    AutomatFragment fragment3;
-    AutomatFragment fragment4;
+    List<AutomatFragment> fragmentList = new ArrayList<>();
+
+    public boolean oneFragmentShown = false;
 
     FragmentManager fm;
 
@@ -55,16 +51,28 @@ public class MainActivity extends FragmentActivity {
             );
         }
 
-        fragment1 = new AutomatFragment(automatList.get(0));
-        fragment2 = new AutomatFragment(automatList.get(1));
-        fragment3 = new AutomatFragment(automatList.get(2));
-        fragment4 = new AutomatFragment(automatList.get(3));
+        for (int i = 0; i < 4; i++){
+            fragmentList.add(new AutomatFragment(automatList.get(i)));
+        }
+        /*
+        Button button = (Button) findViewById(R.id.hideButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (oneFragmentShown){
+                    showAllAutomats();
+                } else {
+                    showOneAutomat(0);
+                }
+            }
+        });
+         */
 
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.fragment1, fragment1);
-        ft.add(R.id.fragment2, fragment2);
-        ft.add(R.id.fragment3, fragment3);
-        ft.add(R.id.fragment4, fragment4);
+        ft.add(R.id.fragment1, fragmentList.get(0));
+        ft.add(R.id.fragment2, fragmentList.get(1));
+        ft.add(R.id.fragment3, fragmentList.get(2));
+        ft.add(R.id.fragment4, fragmentList.get(3));
         ft.commit();
 
         for(Student student : studentList) {
@@ -75,23 +83,23 @@ public class MainActivity extends FragmentActivity {
     public void UpdateData(Automat automat, Student student) {
         switch (automat.getName()){
             case 1:{
-                fragment1.update(student);
-                fragment1.updateQueue(CalculateQueue(1));
+                fragmentList.get(0).update(student);
+                fragmentList.get(0).updateQueue(CalculateQueue(1));
                 break;
             }
             case 2:{
-                fragment2.update(student);
-                fragment2.updateQueue(CalculateQueue(2));
+                fragmentList.get(1).update(student);
+                fragmentList.get(1).updateQueue(CalculateQueue(2));
                 break;
             }
             case 3:{
-                fragment3.update(student);
-                fragment3.updateQueue(CalculateQueue(3));
+                fragmentList.get(2).update(student);
+                fragmentList.get(2).updateQueue(CalculateQueue(3));
                 break;
             }
             case 4:{
-                fragment4.update(student);
-                fragment4.updateQueue(CalculateQueue(4));
+                fragmentList.get(3).update(student);
+                fragmentList.get(3).updateQueue(CalculateQueue(4));
                 break;
             }
         }
@@ -106,6 +114,28 @@ public class MainActivity extends FragmentActivity {
                 queue++;
         }
         return queue - 1 > 0 ? queue - 1 + " человек" : "Людей больше нет.";
+    }
+
+    public void showOneAutomat(int id){
+        FragmentTransaction ft = fm.beginTransaction();
+        for (int i = 0; i < fragmentList.size(); i++){
+            if (i != id){
+                ft.hide(fragmentList.get(i));
+            }
+        }
+        ft.commit();
+        oneFragmentShown = true;
+    }
+
+    public void showAllAutomats(){
+        FragmentTransaction ft = fm.beginTransaction();
+        for (int i = 0; i < fragmentList.size(); i++){
+            if (fragmentList.get(i).isHidden()){
+                ft.show(fragmentList.get(i));
+            }
+        }
+        ft.commit();
+        oneFragmentShown = false;
     }
 
     public static MainActivity getInstance() {
